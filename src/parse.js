@@ -12,16 +12,24 @@
  * Splits CSV text into an array of row arrays.
  *
  * @param {string} input raw CSV text
- * @param {{delimiter?: string}} [options]
+ * @param {{delimiter?: string, keepBom?: boolean}} [options] `keepBom`
+ *   (default false) retains a leading UTF-8 BOM instead of stripping it
  * @returns {string[][]} rows of raw string cells
  */
 function parseRows(input, options = {}) {
   const delimiter = options.delimiter ?? ",";
+  const keepBom = options.keepBom ?? false;
   if (delimiter.length !== 1) {
     throw new TypeError(`delimiter must be a single character, got ${JSON.stringify(delimiter)}`);
   }
   if (typeof input !== "string") {
     throw new TypeError(`expected a string, got ${typeof input}`);
+  }
+
+  // Excel writes a UTF-8 BOM, which otherwise becomes part of the first header
+  // name and quietly breaks every parseObjects key lookup against that column.
+  if (!keepBom && input.charCodeAt(0) === 0xfeff) {
+    input = input.slice(1);
   }
 
   const rows = [];
@@ -80,7 +88,8 @@ function parseRows(input, options = {}) {
  * Parses CSV with a header row into objects keyed by column name.
  *
  * @param {string} input raw CSV text, first row treated as the header
- * @param {{delimiter?: string}} [options]
+ * @param {{delimiter?: string, keepBom?: boolean}} [options] `keepBom`
+ *   (default false) retains a leading UTF-8 BOM instead of stripping it
  * @returns {Record<string, string>[]}
  */
 function parseObjects(input, options = {}) {

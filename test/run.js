@@ -55,6 +55,19 @@ test("rejects non-string input", () => {
   assert.throws(() => parseRows(42), TypeError);
 });
 
+const BOM = String.fromCharCode(0xfeff);
+const LF = String.fromCharCode(10);
+
+test("strips a UTF-8 BOM from the first header", () => {
+  const [record] = parseObjects(BOM + ["name,age", "ada,36"].join(LF));
+  assert.deepEqual(record, { name: "ada", age: "36" });
+});
+
+test("keepBom retains the BOM when asked", () => {
+  const [row] = parseRows(BOM + "a,b", { keepBom: true });
+  assert.equal(row[0], BOM + "a");
+});
+
 test("maps rows onto header keys", () => {
   assert.deepEqual(parseObjects("name,age\nada,36"), [{ name: "ada", age: "36" }]);
 });
