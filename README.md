@@ -21,8 +21,16 @@ const { parseObjects, stringifyObjects } = require("csv-toolkit");
 | `stringifyRows(rows, opts?)` | Row arrays → CSV text |
 | `stringifyObjects(records, opts?)` | Objects → CSV text with a header row |
 
-Options: `delimiter` (default `","`), `eol` (default `"\n"`), and `columns` to
-pin the header order on `stringifyObjects`.
+### Options
+
+| Option | Applies to | Default | Meaning |
+|--------|-----------|---------|---------|
+| `delimiter` | both | `,` | Field separator; must be one character |
+| `keepBom` | parsing | `false` | Retain a leading UTF-8 BOM instead of stripping it |
+| `eol` | stringifying | newline | Row terminator |
+| `columns` | `stringifyObjects` | derived | Pin the header order |
+
+TypeScript declarations ship in `index.d.ts`, so no `allowJs` is needed.
 
 ## What it gets right
 
