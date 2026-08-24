@@ -12,11 +12,15 @@
  * Splits CSV text into an array of row arrays.
  *
  * @param {string} input raw CSV text
- * @param {{delimiter?: string}} [options]
+ * @param {{delimiter?: string, strict?: boolean}} [options] `strict` (default
+ *   true) throws on an unterminated quoted field; pass false to accept the
+ *   truncated value instead
  * @returns {string[][]} rows of raw string cells
+ * @throws {SyntaxError} in strict mode, when a quoted field is never closed
  */
 function parseRows(input, options = {}) {
   const delimiter = options.delimiter ?? ",";
+  const strict = options.strict ?? true;
   if (delimiter.length !== 1) {
     throw new TypeError(`delimiter must be a single character, got ${JSON.stringify(delimiter)}`);
   }
@@ -66,6 +70,15 @@ function parseRows(input, options = {}) {
     } else {
       field += char;
     }
+  }
+
+  // An unclosed quote means the document ended mid-field. Silently emitting the
+  // truncated value hands back data that looks complete but is not, so this is
+  // reported by default.
+  if (inQuotes && strict) {
+    throw new SyntaxError(
+      `unterminated quoted field starting at row ${rows.length + 1}, column ${row.length + 1}`,
+    );
   }
 
   // A trailing newline leaves nothing pending; anything else is a final field.
