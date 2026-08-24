@@ -55,6 +55,23 @@ test("rejects non-string input", () => {
   assert.throws(() => parseRows(42), TypeError);
 });
 
+test("throws on an unterminated quoted field", () => {
+  assert.throws(() => parseRows('a,"b'), SyntaxError);
+});
+
+test("unterminated quote error names the position", () => {
+  assert.throws(() => parseRows(`x,y
+z,"w`), /row 2, column 2/);
+});
+
+test("strict:false accepts a truncated quoted field", () => {
+  assert.deepEqual(parseRows('a,"b', { strict: false }), [["a", "b"]]);
+});
+
+test("a properly closed quote at EOF still parses", () => {
+  assert.deepEqual(parseRows('a,"b"'), [["a", "b"]]);
+});
+
 test("maps rows onto header keys", () => {
   assert.deepEqual(parseObjects("name,age\nada,36"), [{ name: "ada", age: "36" }]);
 });
