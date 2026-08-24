@@ -3,9 +3,12 @@
   "version": "0.1.0",
   "description": "Dependency-free CSV parsing and stringifying that handles quotes, embedded newlines and CRLF correctly",
   "main": "src/index.js",
+  "types": "index.d.ts",
   "type": "commonjs",
+  "files": ["src", "index.d.ts", "README.md", "LICENSE"],
   "scripts": {
-    "test": "node test/run.js"
+    "test": "node test/run.js",
+    "typecheck": "tsc --noEmit --strict index.d.ts"
   },
   "keywords": ["csv", "parser", "rfc4180"],
   "license": "MIT"
