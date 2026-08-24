@@ -1,0 +1,12 @@
+{
+  "name": "csv-toolkit",
+  "version": "0.1.0",
+  "description": "Dependency-free CSV parsing and stringifying that handles quotes, embedded newlines and CRLF correctly",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node test/run.js"
+  },
+  "keywords": ["csv", "parser", "rfc4180"],
+  "license": "MIT"
+}
